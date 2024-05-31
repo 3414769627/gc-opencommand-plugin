@@ -130,8 +130,18 @@ public final class OpenCommandOnlyHttpHandler implements Router {
                         public void timeout() {
                         }
                     };
-
-                    SocketServer.sendPacketAndWait(server.ip, new RunConsoleCommand(req.data.toString()), wait);
+                    String[] parsedData = req.data.toString().split("\n[/!]|\\|");
+                    if (parsedData.length > 1)
+                    {
+                        for (String parsed:parsedData)
+                        {
+                            SocketServer.sendPacketAndWait(server.ip, new RunConsoleCommand(parsed), wait);
+                        }
+                    }
+                    else
+                    {
+                        SocketServer.sendPacketAndWait(server.ip, new RunConsoleCommand(req.data.toString()), wait);
+                    }
                     var packet = wait.getData();
                     if (packet == null) {
                         context.json(new JsonResponse(408, "Timeout"));
